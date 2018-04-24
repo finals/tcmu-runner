@@ -256,7 +256,7 @@ size_t tcmu_memcpy_into_iovec(
 
 	while (len && iov_cnt) {
 		size_t to_copy = min(iovec->iov_len, len);
-
+    
 		if (to_copy) {
 			memcpy(iovec->iov_base, src + copied, to_copy);
 
@@ -643,7 +643,7 @@ finish_page83:
 		/* Optimal xfer length */
 		memcpy(&data[12], &val32, 4);
 
-		if (rhandler->unmap) {
+		if (NULL != rhandler && rhandler->unmap) {
 			/* MAXIMUM UNMAP LBA COUNT */
 			val32 = htobe32(VPD_MAX_UNMAP_LBA_COUNT);
 			memcpy(&data[20], &val32, 4);
@@ -740,9 +740,8 @@ finish_page83:
 		 * This will enable the UNMAP command for the device server and write
 		 * same(10|16) command.
 		 */
-		if (rhandler->unmap)
+		if (NULL != rhandler && rhandler->unmap)
 			data[5] |= 0xe0;
-
 		tcmu_memcpy_into_iovec(iovec, iov_cnt, data, sizeof(data));
 		return SAM_STAT_GOOD;
 	}
